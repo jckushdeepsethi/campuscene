@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: campusconnect_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: campusconnect
+      POSTGRES_PASSWORD: campusconnect_secret_pass
+      POSTGRES_DB: campusconnect_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campusconnect -d campusconnect_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: campusconnect_backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://campusconnect:campusconnect_secret_pass@postgres:5432/campusconnect_db?schema=public
+      FRONTEND_URL: http://localhost:5173
+      JWT_ACCESS_SECRET: campusconnect_super_secret_access_jwt_key_2026
+      JWT_REFRESH_SECRET: campusconnect_super_secret_refresh_jwt_key_2026
+      ACCESS_TOKEN_TTL: 15m
+      REFRESH_TOKEN_TTL_DAYS: 7
+      BCRYPT_SALT_ROUNDS: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma db push && node dist/server.js"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: campusconnect_frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

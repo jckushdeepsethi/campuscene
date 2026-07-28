@@ -1,0 +1,421 @@
+openapi: 3.0.3
+info:
+  title: CampusConnect API
+  description: Campus event management platform API for students, campus societies, placement teams, and university administrators.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local Development Server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user account
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name:
+                  type: string
+                  example: Kushdeep Sethi
+                email:
+                  type: string
+                  format: email
+                  example: kushdeep@example.com
+                password:
+                  type: string
+                  example: StrongPass1
+                role:
+                  type: string
+                  enum: [STUDENT, SOCIETY, PLACEMENT_CELL, ADMIN]
+      responses:
+        '201':
+          description: User registered successfully
+        '409':
+          description: Duplicate email conflict
+
+  /auth/login:
+    post:
+      summary: Authenticate user credentials
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful, issues JWT access token and sets refresh cookie
+        '401':
+          description: Invalid email or password
+
+  /auth/refresh-token:
+    post:
+      summary: Rotate refresh token & issue new access token
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Tokens refreshed successfully
+        '401':
+          description: Invalid or expired refresh token
+
+  /auth/logout:
+    post:
+      summary: Revoke refresh token and clear session cookie
+      tags:
+        - Authentication
+      responses:
+        '204':
+          description: Logged out successfully
+
+  /auth/verify-email:
+    post:
+      summary: Verify email address using token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Email verified successfully
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset link
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Password reset token created and emailed if account exists
+
+  /auth/reset-password:
+    post:
+      summary: Reset account password using token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Password reset successfully
+
+  /auth/me:
+    get:
+      summary: Get details of current authenticated user
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Returns current user details
+        '401':
+          description: Unauthorized
+
+  /events:
+    get:
+      summary: List events with filters and pagination
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [DRAFT, PENDING_APPROVAL, PUBLISHED, REJECTED, CANCELLED, COMPLETED]
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of campus events
+
+    post:
+      summary: Create a new campus event
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, venue, startsAt, endsAt, capacity]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                venue:
+                  type: string
+                startsAt:
+                  type: string
+                  format: date-time
+                endsAt:
+                  type: string
+                  format: date-time
+                capacity:
+                  type: integer
+                status:
+                  type: string
+                  enum: [DRAFT, PENDING_APPROVAL, PUBLISHED]
+      responses:
+        '201':
+          description: Event created successfully
+
+  /events/analytics:
+    get:
+      summary: Get aggregated event analytics and attendance metrics
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Event analytics and attendance conversion statistics
+
+  /events/{id}:
+    get:
+      summary: Get event details and registration status
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event details
+
+    patch:
+      summary: Update event details
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event updated
+
+    delete:
+      summary: Delete draft event or cancel published event
+      tags:
+        - Events
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event deleted or cancelled
+
+  /events/{id}/register:
+    post:
+      summary: Register for an event
+      tags:
+        - Event Registrations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Registered for event (or placed on waitlist)
+        '409':
+          description: Already registered
+
+    delete:
+      summary: Cancel event registration (auto-promotes waitlisted student)
+      tags:
+        - Event Registrations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Registration cancelled successfully
+
+  /events/{id}/export:
+    get:
+      summary: Export attendee list as CSV file
+      tags:
+        - Event Registrations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Attendee list CSV file download
+
+  /events/{id}/registrations:
+    get:
+      summary: List event registrants
+      tags:
+        - Event Registrations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of student registrations
+
+  /events/{id}/approval:
+    patch:
+      summary: Admin approve or reject pending event
+      tags:
+        - Event Approval
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [PUBLISHED, REJECTED]
+      responses:
+        '200':
+          description: Event approval status updated
+
+  /events/{id}/attendance/{registrationId}:
+    patch:
+      summary: Mark student attendance
+      tags:
+        - Event Attendance
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: registrationId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ATTENDED, NO_SHOW, REGISTERED]
+      responses:
+        '200':
+          description: Attendance updated
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  STUDENT
+  SOCIETY
+  PLACEMENT_CELL
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum EventStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PUBLISHED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum EventScope {
+  INTRA_COLLEGE
+  INTER_COLLEGE
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  CANCELLED
+  WAITLISTED
+  ATTENDED
+  NO_SHOW
+}
+
+model User {
+  id                      String                   @id @default(cuid())
+  name                    String
+  email                   String                   @unique
+  passwordHash            String
+  role                    UserRole
+  status                  UserStatus               @default(PENDING_VERIFICATION)
+  rollNumber              String?
+  branch                  String?
+  passingYear             Int?
+  collegeName             String?
+  interests               String[]                 @default([])
+  emailVerifiedAt         DateTime?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  refreshTokens           RefreshToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  organizedEvents         Event[]                  @relation("OrganizedEvents")
+  approvedEvents          Event[]                  @relation("ApprovedEvents")
+  registrations           EventRegistration[]
+
+  @@index([role])
+  @@index([status])
+  @@index([collegeName])
+}
+
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Event {
+  id                  String              @id @default(cuid())
+  title               String
+  description         String
+  venue               String
+  startsAt            DateTime
+  endsAt              DateTime
+  capacity            Int
+  status              EventStatus         @default(DRAFT)
+  scope               EventScope          @default(INTRA_COLLEGE)
+  collegeName         String?
+  allowedBranches     String[]            @default([])
+  allowedPassingYears Int[]               @default([])
+  tags                String[]            @default([])
+  organizerId         String
+  approvedById        String?
+  approvedAt          DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  organizer           User                @relation("OrganizedEvents", fields: [organizerId], references: [id], onDelete: Cascade)
+  approvedBy          User?               @relation("ApprovedEvents", fields: [approvedById], references: [id], onDelete: SetNull)
+  registrations       EventRegistration[]
+
+  @@index([status])
+  @@index([scope])
+  @@index([organizerId])
+  @@index([startsAt])
+}
+
+model EventRegistration {
+  id          String             @id @default(cuid())
+  eventId     String
+  userId      String
+  status      RegistrationStatus @default(REGISTERED)
+  checkedInAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  event       Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+}
