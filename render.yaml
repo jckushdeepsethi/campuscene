@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: backend
-    buildCommand: npm install && npx prisma generate && npm run build
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
     startCommand: npx prisma db push && npm run start
     envVars:
       - key: NODE_ENV
@@ -12,11 +12,11 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_IA53RHBvogLk@ep-divine-base-az8cqm32-pooler.c-3.ap-southeast-1.aws.neon.tech/campusconnect?sslmode=require&channel_binding=require
       - key: DIRECT_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_IA53RHBvogLk@ep-divine-base-az8cqm32.c-3.ap-southeast-1.aws.neon.tech/campusconnect?sslmode=require
       - key: FRONTEND_URL
-        sync: false
+        value: https://campuscene.in
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
