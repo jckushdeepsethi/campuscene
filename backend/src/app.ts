@@ -35,7 +35,10 @@ export const createApp = () => {
           normalized === configuredFrontend ||
           normalized === "http://localhost:5173" ||
           normalized === "http://localhost:3000" ||
-          normalized.endsWith(".vercel.app")
+          normalized.endsWith(".vercel.app") ||
+          normalized === "https://campuscene.in" ||
+          normalized === "https://www.campuscene.in" ||
+          normalized.endsWith(".campuscene.in")
         ) {
           return callback(null, true);
         }
