@@ -29,6 +29,7 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: postgresql://campusconnect:campusconnect_secret_pass@postgres:5432/campusconnect_db?schema=public
+      DIRECT_URL: postgresql://campusconnect:campusconnect_secret_pass@postgres:5432/campusconnect_db?schema=public
       FRONTEND_URL: http://localhost:5173
       JWT_ACCESS_SECRET: campusconnect_super_secret_access_jwt_key_2026
       JWT_REFRESH_SECRET: campusconnect_super_secret_refresh_jwt_key_2026

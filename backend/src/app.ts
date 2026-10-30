@@ -24,9 +24,23 @@ export const createApp = () => {
   const app = express();
 
   app.use(helmet());
+  const configuredFrontend = env.FRONTEND_URL.replace(/\/$/, "");
+
   app.use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const normalized = origin.replace(/\/$/, "");
+        if (
+          normalized === configuredFrontend ||
+          normalized === "http://localhost:5173" ||
+          normalized === "http://localhost:3000" ||
+          normalized.endsWith(".vercel.app")
+        ) {
+          return callback(null, true);
+        }
+        return callback(null, false);
+      },
       credentials: true
     })
   );

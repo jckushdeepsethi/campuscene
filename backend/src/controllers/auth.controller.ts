@@ -9,7 +9,7 @@ const refreshCookieName = "campusconnect_refresh";
 const setRefreshCookie = (res: Parameters<RequestHandler>[1], token: string) => {
   res.cookie(refreshCookieName, token, {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
     secure: env.NODE_ENV === "production",
     maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
     path: "/api/v1/auth"
@@ -55,7 +55,11 @@ export class AuthController {
 
   logout: RequestHandler = async (req, res) => {
     await authService.logout(req.cookies[refreshCookieName]);
-    res.clearCookie(refreshCookieName, { path: "/api/v1/auth" });
+    res.clearCookie(refreshCookieName, {
+      path: "/api/v1/auth",
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production"
+    });
 
     res.status(204).send();
   };
@@ -95,6 +99,24 @@ export class AuthController {
     res.status(200).json({
       success: true,
       data: { user }
+    });
+  };
+
+  getPendingOrganizers: RequestHandler = async (_req, res) => {
+    const organizers = await authService.getPendingOrganizers();
+    res.status(200).json({
+      success: true,
+      data: organizers
+    });
+  };
+
+  updateOrganizerStatus: RequestHandler = async (req, res) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const { status } = req.body;
+    const updated = await authService.updateOrganizerStatus(id, status);
+    res.status(200).json({
+      success: true,
+      data: updated
     });
   };
 }

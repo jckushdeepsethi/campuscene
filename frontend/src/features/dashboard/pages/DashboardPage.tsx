@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { useCurrentUser, useLogout } from "../../auth/hooks/useAuth";
-import { usersApi, type AuthUser } from "../../auth/services/authApi";
+import { authApi, type AuthUser } from "../../auth/services/authApi";
 import { useEvents } from "../../events/hooks/useEvents";
 import { eventsApi } from "../../events/services/eventsApi";
 import { EventAnalyticsWidget } from "../components/EventAnalyticsWidget";
@@ -500,7 +500,7 @@ const AdminDashboardView = ({ user }: { user: AuthUser }) => {
   const fetchPendingOrganizers = async () => {
     setIsOrganizersLoading(true);
     try {
-      const organizers = await usersApi.getPendingOrganizers();
+      const organizers = await authApi.getPendingOrganizers();
       setPendingOrganizers(organizers);
     } catch {
       // Ignore
@@ -515,7 +515,7 @@ const AdminDashboardView = ({ user }: { user: AuthUser }) => {
 
   const handleOrganizerVerification = async (userId: string, action: "APPROVE" | "REJECT") => {
     try {
-      await usersApi.verifyOrganizer(userId, action);
+      await authApi.updateOrganizerStatus(userId, action === "APPROVE" ? "ACTIVE" : "SUSPENDED");
       await fetchPendingOrganizers();
     } catch {
       alert("Failed to update society account status.");

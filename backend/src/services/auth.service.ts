@@ -41,6 +41,17 @@ export class AuthService {
       }
     }
 
+    if (input.role === "SOCIETY" || input.role === "PLACEMENT_CELL") {
+      const existingSociety = await this.userRepository.findExistingSociety(input.name, input.collegeName);
+      if (existingSociety) {
+        throw new AppError(
+          409,
+          ErrorCodes.CONFLICT,
+          `A society/club account for "${input.name}" already exists${input.collegeName ? ` at ${input.collegeName}` : ""}. Only one official account per society is permitted.`
+        );
+      }
+    }
+
     const initialStatus = (input.role === "SOCIETY" || input.role === "PLACEMENT_CELL")
       ? UserStatus.PENDING_VERIFICATION
       : UserStatus.PENDING_VERIFICATION;
@@ -162,6 +173,20 @@ export class AuthService {
     }
 
     return toPublicUserDto(user);
+  }
+
+  async getPendingOrganizers() {
+    const organizers = await this.userRepository.findPendingOrganizers();
+    return organizers.map(toPublicUserDto);
+  }
+
+  async updateOrganizerStatus(userId: string, status: UserStatus) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, ErrorCodes.NOT_FOUND, "User not found.");
+    }
+    const updated = await this.userRepository.updateStatus(userId, status);
+    return toPublicUserDto(updated);
   }
 
   private async issueTokenPair(userId: string, role: string) {

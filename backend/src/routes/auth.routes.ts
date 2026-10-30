@@ -14,6 +14,8 @@ import {
 const router = Router();
 const authController = new AuthController();
 
+import { authorize } from "../middleware/authorize.js";
+
 router.post("/register", validateBody(registerSchema), asyncHandler(authController.register));
 router.post("/login", validateBody(loginSchema), asyncHandler(authController.login));
 router.post("/refresh-token", asyncHandler(authController.refreshToken));
@@ -22,6 +24,8 @@ router.post("/verify-email", validateBody(tokenSchema), asyncHandler(authControl
 router.post("/forgot-password", validateBody(forgotPasswordSchema), asyncHandler(authController.forgotPassword));
 router.post("/reset-password", validateBody(resetPasswordSchema), asyncHandler(authController.resetPassword));
 router.get("/me", authenticate, asyncHandler(authController.me));
+router.get("/pending-organizers", authenticate, authorize("ADMIN"), asyncHandler(authController.getPendingOrganizers));
+router.patch("/organizers/:id/status", authenticate, authorize("ADMIN"), asyncHandler(authController.updateOrganizerStatus));
 
 export { router as authRoutes };
 

@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CalendarPlus, Globe2, Loader2, School, Sparkles } from "lucide-react";
+import { ArrowLeft, CalendarPlus, Globe2, Loader2, School, ShieldAlert, Sparkles } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import { useCurrentUser } from "../../auth/hooks/useAuth";
 import { useCreateEvent } from "../hooks/useEvents";
 import { eventsApi } from "../services/eventsApi";
+import { getErrorMessage } from "../../../lib/errors";
 import { eventFormSchema, type EventFormValues } from "../schemas/eventSchemas";
 
 export const CreateEventPage = () => {
   const { data: user } = useCurrentUser();
   const createEventMutation = useCreateEvent();
+  const navigate = useNavigate();
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
   const isSociety = user?.role === "SOCIETY";
+  const isPendingVerification = user?.status === "PENDING_VERIFICATION";
 
   const {
     register,
@@ -36,7 +39,7 @@ export const CreateEventPage = () => {
       collegeName: user?.collegeName ?? "",
       allowedBranchesInput: "",
       allowedPassingYearsInput: "",
-      status: isSociety ? "PENDING_APPROVAL" : "PUBLISHED"
+      status: "PENDING_APPROVAL"
     }
   });
 
@@ -69,8 +72,8 @@ export const CreateEventPage = () => {
   };
 
   const onSubmit = (values: EventFormValues) => {
-    const startsAtISO = new Date(values.startsAt).toISOString();
-    const endsAtISO = new Date(values.endsAt).toISOString();
+    const startsAtISO = values.startsAt ? new Date(values.startsAt).toISOString() : new Date().toISOString();
+    const endsAtISO = values.endsAt ? new Date(values.endsAt).toISOString() : new Date(Date.now() + 3600000).toISOString();
 
     const allowedBranches = values.allowedBranchesInput
       ? values.allowedBranchesInput.split(",").map((b) => b.trim()).filter(Boolean)
@@ -82,20 +85,27 @@ export const CreateEventPage = () => {
 
     const tags = allowedBranches.length > 0 ? allowedBranches : ["Campus Event"];
 
-    createEventMutation.mutate({
-      title: values.title,
-      description: values.description,
-      venue: values.venue,
-      capacity: values.capacity,
-      startsAt: startsAtISO,
-      endsAt: endsAtISO,
-      scope: values.scope ?? "INTRA_COLLEGE",
-      collegeName: values.collegeName || user?.collegeName || undefined,
-      allowedBranches,
-      allowedPassingYears,
-      tags,
-      status: values.status
-    });
+    createEventMutation.mutate(
+      {
+        title: values.title,
+        description: values.description,
+        venue: values.venue,
+        capacity: values.capacity,
+        startsAt: startsAtISO,
+        endsAt: endsAtISO,
+        scope: values.scope ?? "INTRA_COLLEGE",
+        collegeName: values.collegeName || user?.collegeName || undefined,
+        allowedBranches,
+        allowedPassingYears,
+        tags,
+        status: isSociety ? "PENDING_APPROVAL" : "PUBLISHED"
+      },
+      {
+        onSuccess: () => {
+          navigate("/events");
+        }
+      }
+    );
   };
 
   return (
@@ -117,10 +127,22 @@ export const CreateEventPage = () => {
       </header>
 
       <section className="mx-auto max-w-4xl px-5 py-8 lg:px-8">
+        {isPendingVerification && (
+          <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 shadow-sm flex items-start gap-3">
+            <ShieldAlert className="text-amber-600 shrink-0 mt-0.5" size={20} />
+            <div className="text-xs space-y-1">
+              <p className="font-bold text-sm">Society Account Pending Admin Approval</p>
+              <p>
+                Your society account is currently awaiting verification by a University Admin. Once an Admin approves your society account from the Admin Governance Dashboard, your submitted events will be published!
+              </p>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           {createEventMutation.isError && (
             <div className="mb-6 rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-              {(createEventMutation.error as any)?.response?.data?.message || "Failed to create event. Please check inputs."}
+              {getErrorMessage(createEventMutation.error, "Failed to create event. Please check inputs.")}
             </div>
           )}
 

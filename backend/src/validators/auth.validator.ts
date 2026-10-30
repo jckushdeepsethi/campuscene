@@ -16,7 +16,10 @@ export const registerSchema = z.object({
   adminSecretKey: z.string().trim().optional(),
   rollNumber: z.string().trim().max(50).optional(),
   branch: z.string().trim().max(100).optional(),
-  passingYear: z.coerce.number().int().min(2000).max(2100).optional(),
+  passingYear: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined || val === 0 || Number.isNaN(Number(val)) ? undefined : Number(val)),
+    z.number().int().min(2000).max(2100).optional()
+  ),
   collegeName: z.string().trim().max(200).optional()
 });
 

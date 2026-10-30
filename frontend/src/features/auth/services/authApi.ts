@@ -78,6 +78,16 @@ export const authApi = {
   async logout() {
     await api.post("/auth/logout");
     setAccessToken(null);
+  },
+
+  async getPendingOrganizers() {
+    const response = await api.get<{ data: AuthUser[] }>("/auth/pending-organizers");
+    return response.data.data;
+  },
+
+  async updateOrganizerStatus(userId: string, status: "ACTIVE" | "SUSPENDED") {
+    const response = await api.patch<{ data: AuthUser }>(`/auth/organizers/${userId}/status`, { status });
+    return response.data.data;
   }
 };
 

@@ -20,6 +20,10 @@ test("E2E Full Platform Lifecycle: User Registration -> Event Draft -> Admin App
 
   const fakeAuthRepo: any = {
     findByEmail: async (email: string) => Array.from(usersStore.values()).find((u) => u.email === email) || null,
+    findExistingSociety: async (name: string, collegeName?: string) =>
+      Array.from(usersStore.values()).find(
+        (u) => (u.role === "SOCIETY" || u.role === "PLACEMENT_CELL") && u.name.toLowerCase() === name.toLowerCase()
+      ) || null,
     create: async (data: any) => {
       const user = { id: `u-${Date.now()}-${Math.random()}`, status: "ACTIVE", ...data };
       usersStore.set(user.id, user);

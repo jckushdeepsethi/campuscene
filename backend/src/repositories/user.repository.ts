@@ -10,6 +10,16 @@ export class UserRepository {
     return prisma.user.findUnique({ where: { id } });
   }
 
+  findExistingSociety(name: string, collegeName?: string) {
+    return prisma.user.findFirst({
+      where: {
+        role: { in: ["SOCIETY", "PLACEMENT_CELL"] },
+        name: { equals: name, mode: "insensitive" },
+        ...(collegeName && { collegeName: { equals: collegeName, mode: "insensitive" } })
+      }
+    });
+  }
+
   findPendingOrganizers() {
     return prisma.user.findMany({
       where: {
@@ -24,11 +34,11 @@ export class UserRepository {
     return prisma.user.create({ data });
   }
 
-  markEmailVerified(userId: string) {
+  markEmailVerified(userId: string, status: UserStatus = "ACTIVE") {
     return prisma.user.update({
       where: { id: userId },
       data: {
-        status: "ACTIVE",
+        status,
         emailVerifiedAt: new Date()
       }
     });
