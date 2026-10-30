@@ -3,7 +3,7 @@ import test from "node:test";
 import type { NextFunction, Request, Response } from "express";
 
 process.env.NODE_ENV = "test";
-process.env.DATABASE_URL = "postgresql://user:password@localhost:5432/campusconnect_test";
+process.env.DATABASE_URL = "postgresql://user:password@localhost:5432/campuscene_test";
 process.env.FRONTEND_URL = "http://localhost:5173";
 process.env.JWT_ACCESS_SECRET = "test-access-secret-with-at-least-thirty-two-characters";
 process.env.JWT_REFRESH_SECRET = "test-refresh-secret-with-at-least-thirty-two-characters";

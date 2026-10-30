@@ -42,7 +42,7 @@ export const RegisterPage = () => {
   const selectedRole = watch("role");
 
   return (
-    <AuthCard title="Create your account" subtitle="Choose the role that matches how you use CampusConnect.">
+    <AuthCard title="Create your account" subtitle="Choose the role that matches how you use CampuScene.">
       <form className="space-y-4" onSubmit={handleSubmit((values) => registerMutation.mutate(values))}>
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">Full name / Society Name</span>
@@ -74,7 +74,7 @@ export const RegisterPage = () => {
               <ShieldAlert size={14} className="text-amber-600" /> Admin Registration Restricted
             </div>
             <p className="text-[11px] text-amber-800">
-              Admin accounts require the system Master Security Key. Standard development default is: <code className="font-mono font-bold bg-amber-100 px-1 py-0.5 rounded text-slate-900">campusconnect-admin-secret-2026</code>
+              Admin accounts require the system Master Security Key. Standard development default is: <code className="font-mono font-bold bg-amber-100 px-1 py-0.5 rounded text-slate-900">campuscene-admin-secret-2026</code>
             </p>
             <label className="block pt-1">
               <span className="mb-1 block text-xs font-semibold text-amber-950">Master Security Key</span>

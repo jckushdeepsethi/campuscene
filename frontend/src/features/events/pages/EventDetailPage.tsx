@@ -114,7 +114,7 @@ export const EventDetailPage = () => {
               </Button>
             </Link>
             <div>
-              <p className="text-sm font-semibold text-primary">CampusConnect</p>
+              <p className="text-sm font-semibold text-primary">CampuScene</p>
               <h1 className="text-2xl font-bold text-slate-950">Event Workspace</h1>
             </div>
           </div>

@@ -50,7 +50,7 @@ export const EventsListPage = () => {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div>
-            <p className="text-sm font-black text-indigo-600 tracking-wide uppercase">TheScene AI</p>
+            <p className="text-sm font-black text-indigo-600 tracking-wide uppercase">CampuScene AI</p>
             <h1 className="mt-1 text-2xl font-bold text-slate-950 sm:text-3xl">What's the Scene on Campus</h1>
           </div>
           <div className="flex items-center gap-2 flex-wrap">

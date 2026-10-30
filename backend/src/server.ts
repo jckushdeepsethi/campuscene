@@ -5,7 +5,7 @@ import { prisma } from "./config/prisma.js";
 const app = createApp();
 
 const server = app.listen(env.PORT, () => {
-  console.log(`CampusConnect API listening on port ${env.PORT}`);
+  console.log(`CampuScene API listening on port ${env.PORT}`);
 });
 
 const shutdown = async () => {

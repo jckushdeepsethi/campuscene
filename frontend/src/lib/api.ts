@@ -11,15 +11,15 @@ export const api = axios.create({
 export const setAccessToken = (token: string | null) => {
   if (token) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
-    localStorage.setItem("campusconnect_access_token", token);
+    localStorage.setItem("campuscene_access_token", token);
     return;
   }
 
   delete api.defaults.headers.common.Authorization;
-  localStorage.removeItem("campusconnect_access_token");
+  localStorage.removeItem("campuscene_access_token");
 };
 
-const existingToken = localStorage.getItem("campusconnect_access_token");
+const existingToken = localStorage.getItem("campuscene_access_token");
 
 if (existingToken) {
   setAccessToken(existingToken);

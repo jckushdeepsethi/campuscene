@@ -10,7 +10,7 @@ export const useCurrentUser = () =>
   useQuery({
     queryKey: authKeys.me,
     queryFn: authApi.me,
-    enabled: Boolean(localStorage.getItem("campusconnect_access_token"))
+    enabled: Boolean(localStorage.getItem("campuscene_access_token"))
   });
 
 export const useLogin = () => {

@@ -49,15 +49,15 @@ export class EmailService {
   async sendVerificationEmail(to: string, name: string, token: string): Promise<EmailPayload> {
     const verificationUrl = `${env.FRONTEND_URL}/verify-email?token=${token}`;
 
-    const subject = "Verify your account on TheScene";
-    const text = `Hello ${name},\n\nPlease verify your account on TheScene by clicking the following link:\n${verificationUrl}\n\nThis token will expire in 60 minutes.`;
+    const subject = "Verify your account on CampuScene";
+    const text = `Hello ${name},\n\nPlease verify your account on CampuScene by clicking the following link:\n${verificationUrl}\n\nThis token will expire in 60 minutes.`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="color: #4f46e5; margin: 0; font-size: 24px; font-weight: bold;">TheScene AI</h2>
-          <p style="color: #64748b; font-size: 13px; margin-top: 4px;">What's the scene on campus?</p>
+          <h2 style="color: #4f46e5; margin: 0; font-size: 24px; font-weight: bold;">CampuScene AI</h2>
+          <p style="color: #64748b; font-size: 13px; margin-top: 4px;">The scene of every event at the campus</p>
         </div>
-        <h3 style="color: #0f172a;">Welcome to TheScene, ${name}!</h3>
+        <h3 style="color: #0f172a;">Welcome to CampuScene, ${name}!</h3>
         <p style="color: #334155; line-height: 1.6;">Thank you for registering. Please click the button below to verify your email address and activate your account:</p>
         <div style="margin: 30px 0; text-align: center;">
           <a href="${verificationUrl}" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);">Verify Email Address</a>
@@ -76,12 +76,12 @@ export class EmailService {
   async sendPasswordResetEmail(to: string, name: string, token: string): Promise<EmailPayload> {
     const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${token}`;
 
-    const subject = "Reset your CampusConnect Password";
-    const text = `Hello ${name},\n\nYou requested a password reset for your CampusConnect account. Click the link below to set a new password:\n${resetUrl}\n\nThis token will expire in 30 minutes.`;
+    const subject = "Reset your CampuScene Password";
+    const text = `Hello ${name},\n\nYou requested a password reset for your CampuScene account. Click the link below to set a new password:\n${resetUrl}\n\nThis token will expire in 30 minutes.`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="color: #4f46e5; margin: 0; font-size: 24px;">CampusConnect</h2>
+          <h2 style="color: #4f46e5; margin: 0; font-size: 24px;">CampuScene</h2>
         </div>
         <h3 style="color: #0f172a;">Password Reset Request</h3>
         <p style="color: #334155; line-height: 1.6;">Hello ${name}, we received a request to reset your password. Click the button below to set a new password:</p>

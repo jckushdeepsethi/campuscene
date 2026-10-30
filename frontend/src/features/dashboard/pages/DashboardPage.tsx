@@ -52,11 +52,11 @@ export const DashboardPage = () => {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-white font-bold text-lg">
-              CC
+              CS
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-extrabold text-primary">CampusConnect</span>
+                <span className="text-sm font-extrabold text-primary">CampuScene</span>
                 <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full border ${roleBadges[user.role].color}`}>
                   <BadgeIcon size={12} />
                   {roleBadges[user.role].label}

@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: CampusConnect API
+  title: CampuScene API
   description: Campus event management platform API for students, campus societies, placement teams, and university administrators.
   version: 1.0.0
 servers:

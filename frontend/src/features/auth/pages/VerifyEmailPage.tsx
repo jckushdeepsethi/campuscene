@@ -24,7 +24,7 @@ export const VerifyEmailPage = () => {
   });
 
   return (
-    <AuthCard title="Verify your email" subtitle="Paste the verification token for your CampusConnect account.">
+    <AuthCard title="Verify your email" subtitle="Paste the verification token for your CampuScene account.">
       <form className="space-y-4" onSubmit={handleSubmit((values) => verifyEmailMutation.mutate(values))}>
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">Verification token</span>

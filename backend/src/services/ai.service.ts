@@ -66,7 +66,7 @@ export class AiService {
         eligibility: ["Open to all branches and years", "Prior basic interest recommended"],
         thingsToBring: ["College Student ID Card", "Laptop & charger", "Notepad & pen"],
         learningOutcomes: ["Practical industry skills", "Team collaboration", "Networking"],
-        promotionalParagraph: `🔥 Don't miss ${input.title}! Reserve your spot now on CampusConnect!`,
+        promotionalParagraph: `🔥 Don't miss ${input.title}! Reserve your spot now on CampuScene!`,
         venue: input.venue || "Campus Main Auditorium",
         tags: isTech ? ["Coding", "Hackathon", "Tech", "Innovation"] : ["Campus Life", "Networking", "Cultural"],
         suggestedCapacity: 150
@@ -147,7 +147,7 @@ export class AiService {
     if (this.genAI) {
       try {
         const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const prompt = `You are CampusConnect AI Assistant.
+        const prompt = `You are CampuScene AI Assistant.
 Answer the student's question concisely using ONLY the event details provided.
 If the question is a greeting (e.g. "hi", "hello"), greet back warmly and summarize the event in 1 sentence.
 If the answer is NOT present in the details, politely state: "I'm sorry, but that detail is not specified in the official event information. Please contact the organizer."
@@ -220,7 +220,7 @@ Student Question: "${studentQuestion}"`;
   }) {
     const prompt = AIPrompts.emailGenerator(input);
     return this.callGeminiJson<{ subject: string; body: string }>(prompt, () => ({
-      subject: `[CampusConnect] Important Update regarding ${input.eventTitle}`,
+      subject: `[CampuScene] Important Update regarding ${input.eventTitle}`,
       body: `Dear Participant,\n\nThank you for engaging with ${input.eventTitle}.\n\nBest regards,\nCampus Event Organizing Committee`
     }));
   }
@@ -234,7 +234,7 @@ Student Question: "${studentQuestion}"`;
       bulletPoints: ["Top Mentors", "Certificates", "Networking"],
       instagramCaption: `🔥 ${title} is LIVE! Don't miss out on campus. Link in bio to register! 🚀`,
       linkedInAnnouncement: `Excited to announce ${title}! Join us for an enriching experience.`,
-      hashtags: ["#CampusConnect", `#${title.replace(/\s+/g, "")}`, "#StudentEvents"]
+      hashtags: ["#CampuScene", `#${title.replace(/\s+/g, "")}`, "#StudentEvents"]
     }));
   }
 

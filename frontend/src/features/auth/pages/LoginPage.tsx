@@ -52,7 +52,7 @@ export const LoginPage = () => {
         </Link>
       </p>
       <p className="mt-5 text-center text-sm text-slate-600">
-        New to CampusConnect?{" "}
+        New to CampuScene?{" "}
         <Link className="font-semibold text-primary hover:underline" to="/register">
           Create account
         </Link>

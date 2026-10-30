@@ -4,7 +4,7 @@ import { AuthService } from "../services/auth.service.js";
 
 const authService = new AuthService();
 
-const refreshCookieName = "campusconnect_refresh";
+const refreshCookieName = "campuscene_refresh";
 
 const setRefreshCookie = (res: Parameters<RequestHandler>[1], token: string) => {
   res.cookie(refreshCookieName, token, {

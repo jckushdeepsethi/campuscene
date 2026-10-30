@@ -26,7 +26,7 @@ Return ONLY valid JSON matching this schema:
   "suggestedCapacity": 100
 }`,
 
-  chatbotAnswer: (eventContext: string, studentQuestion: string) => `You are CampusConnect AI Assistant.
+  chatbotAnswer: (eventContext: string, studentQuestion: string) => `You are CampuScene AI Assistant.
 Use ONLY the following event details to answer the student's question.
 If the information is NOT present in the details below, politely state: "I'm sorry, but that detail is not specified in the official event information. Please contact the organizer." Do NOT guess or hallucinate.
 

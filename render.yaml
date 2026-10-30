@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: campusconnect-backend
+    name: campuscene-backend
     runtime: node
     plan: free
     rootDir: backend
@@ -30,4 +30,4 @@ services:
       - key: ADMIN_SECRET_KEY
         generateValue: true
       - key: EMAIL_FROM
-        value: CampusConnect <noreply@campusconnect.edu>
+        value: CampuScene <noreply@campuscene.edu>

@@ -1,8 +1,8 @@
-# CampusConnect
+# CampuScene
 
-Campus event management platform for students, societies, placement teams, and admins.
+The scene of every event at the campus. Campus event management platform for students, societies, placement teams, and admins.
 
-CampusConnect is being built module by module as a public software engineering journey. The current milestone adds the event dashboard foundation.
+CampuScene is being built module by module as a public software engineering journey.
 
 ## Current Status
 

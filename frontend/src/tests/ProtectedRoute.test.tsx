@@ -30,7 +30,7 @@ const createTestApp = (initialRoute: string, userPayload?: any) => {
 
 describe("ProtectedRoute", () => {
   it("redirects to /login when no access token exists in localStorage", () => {
-    localStorage.removeItem("campusconnect_access_token");
+    localStorage.removeItem("campuscene_access_token");
     render(createTestApp("/dashboard"));
 
     expect(screen.getByText("Login Page Mock")).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("ProtectedRoute", () => {
   });
 
   it("renders protected content when access token exists and user query succeeds", () => {
-    localStorage.setItem("campusconnect_access_token", "mock-access-token");
+    localStorage.setItem("campuscene_access_token", "mock-access-token");
     const mockUser = { id: "user-1", name: "Alice", email: "alice@example.com", role: "STUDENT", status: "ACTIVE" };
     render(createTestApp("/dashboard", mockUser));
 

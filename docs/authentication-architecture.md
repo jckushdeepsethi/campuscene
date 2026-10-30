@@ -2,7 +2,7 @@
 
 ## Why This Architecture
 
-CampusConnect separates concerns using a clean MVC and repository-oriented structure:
+CampuScene separates concerns using a clean MVC and repository-oriented structure:
 
 - Routes only define HTTP endpoints and middleware composition.
 - Controllers translate HTTP requests into service calls.

@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: campusconnect_postgres
+    container_name: campuscene_postgres
     restart: always
     environment:
-      POSTGRES_USER: campusconnect
-      POSTGRES_PASSWORD: campusconnect_secret_pass
-      POSTGRES_DB: campusconnect_db
+      POSTGRES_USER: campuscene
+      POSTGRES_PASSWORD: campuscene_secret_pass
+      POSTGRES_DB: campuscene_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U campusconnect -d campusconnect_db"]
+      test: ["CMD-SHELL", "pg_isready -U campuscene -d campuscene_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,18 +21,18 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: campusconnect_backend
+    container_name: campuscene_backend
     restart: always
     ports:
       - "4000:4000"
     environment:
       NODE_ENV: production
       PORT: 4000
-      DATABASE_URL: postgresql://campusconnect:campusconnect_secret_pass@postgres:5432/campusconnect_db?schema=public
-      DIRECT_URL: postgresql://campusconnect:campusconnect_secret_pass@postgres:5432/campusconnect_db?schema=public
+      DATABASE_URL: postgresql://campuscene:campuscene_secret_pass@postgres:5432/campuscene_db?schema=public
+      DIRECT_URL: postgresql://campuscene:campuscene_secret_pass@postgres:5432/campuscene_db?schema=public
       FRONTEND_URL: http://localhost:5173
-      JWT_ACCESS_SECRET: campusconnect_super_secret_access_jwt_key_2026
-      JWT_REFRESH_SECRET: campusconnect_super_secret_refresh_jwt_key_2026
+      JWT_ACCESS_SECRET: campuscene_super_secret_access_jwt_key_2026
+      JWT_REFRESH_SECRET: campuscene_super_secret_refresh_jwt_key_2026
       ACCESS_TOKEN_TTL: 15m
       REFRESH_TOKEN_TTL_DAYS: 7
       BCRYPT_SALT_ROUNDS: 10
@@ -46,7 +46,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: campusconnect_frontend
+    container_name: campuscene_frontend
     restart: always
     ports:
       - "5173:80"

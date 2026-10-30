@@ -44,7 +44,7 @@ export const CertificateModal = ({ eventId, onClose }: { eventId: string; onClos
         <div className="flex items-center justify-between bg-slate-900 p-4 text-white print:hidden">
           <div className="flex items-center gap-2">
             <Award className="text-amber-400" size={22} />
-            <h3 className="text-sm font-bold">TheScene Verified Digital Certificate</h3>
+            <h3 className="text-sm font-bold">CampuScene Verified Digital Certificate</h3>
           </div>
           <div className="flex items-center gap-2">
             {cert && (
@@ -122,7 +122,7 @@ export const CertificateModal = ({ eventId, onClose }: { eventId: string; onClos
 
                 <div className="text-right">
                   <div className="inline-block border-b border-slate-400 px-6 pb-1">
-                    <span className="font-serif italic text-xs text-indigo-900 font-bold">CampusConnect Committee</span>
+                    <span className="font-serif italic text-xs text-indigo-900 font-bold">CampuScene Committee</span>
                   </div>
                   <p className="text-[10px] font-bold text-slate-600 uppercase mt-1">Authorized Signature</p>
                 </div>

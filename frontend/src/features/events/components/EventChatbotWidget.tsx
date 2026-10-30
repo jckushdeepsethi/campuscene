@@ -16,7 +16,7 @@ export const EventChatbotWidget = ({ event }: { event: EventItem }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "bot",
-      text: `Hi! I'm TheScene AI Assistant for "${event.title}". Ask me anything about eligibility, timings, or deliverables!`
+      text: `Hi! I'm CampuScene AI Assistant for "${event.title}". Ask me anything about eligibility, timings, or deliverables!`
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
