@@ -74,7 +74,7 @@ export const RegisterPage = () => {
               <ShieldAlert size={14} className="text-amber-600" /> Admin Registration Restricted
             </div>
             <p className="text-[11px] text-amber-800">
-              Admin accounts require the system Master Security Key. Standard development default is: <code className="font-mono font-bold bg-amber-100 px-1 py-0.5 rounded text-slate-900">campuscene-admin-secret-2026</code>
+              Admin accounts require an authorized system Master Security Key. Please provide the security key assigned to your institution administrator.
             </p>
             <label className="block pt-1">
               <span className="mb-1 block text-xs font-semibold text-amber-950">Master Security Key</span>
