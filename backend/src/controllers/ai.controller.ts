@@ -67,12 +67,12 @@ export class AiController {
 
   // 6. Form Fields Suggestion
   suggestFormFields: RequestHandler = async (req, res) => {
-    const { eventTitle, category } = req.body;
+    const { eventTitle, category, existingQuestions } = req.body;
     if (!eventTitle) {
       throw new AppError(400, ErrorCodes.BAD_REQUEST, "eventTitle is required.");
     }
 
-    const result = await aiService.suggestRegistrationFormFields(eventTitle, category);
+    const result = await aiService.suggestRegistrationFormFields(eventTitle, category, existingQuestions);
     res.status(200).json({ success: true, data: result });
   };
 

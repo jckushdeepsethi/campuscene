@@ -74,6 +74,16 @@ export class AuthController {
     });
   };
 
+  resendVerification: RequestHandler = async (req, res) => {
+    const result = await authService.resendVerification(req.body.email);
+
+    res.status(200).json({
+      success: true,
+      message: "If an unverified account exists, a new verification code has been sent.",
+      data: env.NODE_ENV === "development" ? result : undefined
+    });
+  };
+
   forgotPassword: RequestHandler = async (req, res) => {
     const result = await authService.forgotPassword(req.body);
 

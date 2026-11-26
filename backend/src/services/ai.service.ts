@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { env } from "../config/env.js";
 import { AIPrompts } from "../prompts/ai.prompts.js";
 
@@ -23,27 +23,42 @@ export type AiEventDescriptionOutput = {
 };
 
 export class AiService {
-  private genAI: GoogleGenerativeAI | null = null;
+  private ai: GoogleGenAI | null = null;
 
   constructor() {
     const apiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (apiKey) {
-      this.genAI = new GoogleGenerativeAI(apiKey);
+      this.ai = new GoogleGenAI({ apiKey });
     }
   }
 
   private async callGeminiJson<T>(prompt: string, fallbackFn: () => T): Promise<T> {
-    if (this.genAI) {
-      try {
-        const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const response = await model.generateContent(prompt);
-        const text = response.response.text();
-        const jsonMatch = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-        if (jsonMatch) {
-          return JSON.parse(jsonMatch[0]) as T;
+    if (this.ai) {
+      // Priority cascade of models available on your account (fast-lite tier handles 503 high-demand spikes)
+      const models = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.5-flash",
+        "gemma-4-31b-it"
+      ];
+      for (const model of models) {
+        try {
+          const response = await this.ai.models.generateContent({
+            model,
+            contents: prompt,
+          });
+          const text = response.text;
+          if (text) {
+            const jsonMatch = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+            if (jsonMatch) {
+              return JSON.parse(jsonMatch[0]) as T;
+            }
+          }
+        } catch (err) {
+          console.warn(`[AiService] Model ${model} failed, trying next fallback:`, err);
         }
-      } catch (err) {
-        console.error("Gemini API Error, using fallback engine:", err);
       }
     }
     return fallbackFn();
@@ -144,10 +159,8 @@ export class AiService {
 
   // 4. AI Event Chatbot (Smart Conversational Non-Hallucinating Response)
   async answerEventChatbot(eventContext: string, studentQuestion: string): Promise<string> {
-    if (this.genAI) {
-      try {
-        const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const prompt = `You are CampuScene AI Assistant.
+    if (this.ai) {
+      const prompt = `You are CampuScene AI Assistant.
 Answer the student's question concisely using ONLY the event details provided.
 If the question is a greeting (e.g. "hi", "hello"), greet back warmly and summarize the event in 1 sentence.
 If the answer is NOT present in the details, politely state: "I'm sorry, but that detail is not specified in the official event information. Please contact the organizer."
@@ -157,13 +170,27 @@ ${eventContext}
 
 Student Question: "${studentQuestion}"`;
 
-        const res = await model.generateContent(prompt);
-        const ansText = res.response.text();
-        if (ansText && ansText.trim().length > 0) {
-          return ansText.trim();
+      const models = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.5-flash",
+        "gemma-4-31b-it"
+      ];
+      for (const model of models) {
+        try {
+          const res = await this.ai.models.generateContent({
+            model,
+            contents: prompt,
+          });
+          const ansText = res.text;
+          if (ansText && ansText.trim().length > 0) {
+            return ansText.trim();
+          }
+        } catch (err) {
+          console.warn(`[AiService] Chatbot model ${model} failed, trying next fallback:`, err);
         }
-      } catch (err) {
-        console.error("Gemini Chatbot Error, falling back to smart heuristic:", err);
       }
     }
 
@@ -271,21 +298,46 @@ Student Question: "${studentQuestion}"`;
   }
 
   // 9. AI Smart Registration Form Field Builder
-  async suggestRegistrationFormFields(eventTitle: string, category?: string) {
-    const prompt = AIPrompts.smartFormBuilder(eventTitle, category);
+  async suggestRegistrationFormFields(eventTitle: string, category?: string, existingQuestions?: string[]) {
+    const prompt = AIPrompts.smartFormBuilder(eventTitle, category, existingQuestions);
     return this.callGeminiJson(prompt, () => {
+      const isTournament = /tournament|cricket|football|match|sports|esports|cup|league/i.test(eventTitle);
       const isTech = /hackathon|code|ai|tech/i.test(eventTitle);
-      if (isTech) {
-        return [
-          { label: "Team Name", fieldType: "TEXT", required: true },
-          { label: "GitHub Profile URL", fieldType: "TEXT", required: true },
-          { label: "Tech Stack / Preferred Language", fieldType: "TEXT", required: false }
-        ];
-      }
-      return [
-        { label: "Contact Phone Number", fieldType: "NUMBER", required: true },
-        { label: "Dietary / Seating Preference", fieldType: "SELECT", required: false, options: ["Veg", "Non-Veg"] }
-      ];
+      const existing = (existingQuestions || []).map((q) => q.toLowerCase());
+
+      const defaults = isTournament
+        ? [
+            { label: "Team Name", fieldType: "TEXT", required: true },
+            { label: "Captain Name", fieldType: "TEXT", required: true },
+            { label: "Captain WhatsApp / Phone Number", fieldType: "NUMBER", required: true },
+            { label: "Team Members & Roll Numbers (Full Squad List)", fieldType: "TEXT", required: true },
+            {
+              label: "Player Role / Specialization",
+              fieldType: "SELECT",
+              required: true,
+              options: ["Batsman", "Bowler", "All-Rounder", "Wicket-Keeper"]
+            },
+            {
+              label: "Jersey Size",
+              fieldType: "SELECT",
+              required: false,
+              options: ["S", "M", "L", "XL", "XXL"]
+            }
+          ]
+        : isTech
+        ? [
+            { label: "Team Name", fieldType: "TEXT", required: true },
+            { label: "GitHub Profile URL", fieldType: "TEXT", required: true },
+            { label: "Tech Stack / Preferred Language", fieldType: "TEXT", required: false },
+            { label: "Prior Hackathon Experience (Beginner/Intermediate/Pro)", fieldType: "SELECT", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+          ]
+        : [
+            { label: "Contact Phone Number", fieldType: "NUMBER", required: true },
+            { label: "Dietary / Seating Preference", fieldType: "SELECT", required: false, options: ["Veg", "Non-Veg"] },
+            { label: "Emergency Contact Name & Relation", fieldType: "TEXT", required: false }
+          ];
+
+      return defaults.filter((d) => !existing.some((e) => e.includes(d.label.toLowerCase()) || d.label.toLowerCase().includes(e)));
     });
   }
 

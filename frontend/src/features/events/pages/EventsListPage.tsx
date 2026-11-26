@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Calendar,
@@ -33,10 +33,14 @@ const statusPills: Record<EventStatus, { label: string; className: string }> = {
 export const EventsListPage = () => {
   const { data: user } = useCurrentUser();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialStatus = (searchParams.get("status") as EventStatus) || undefined;
+  const statusParam = (searchParams.get("status") as EventStatus) || undefined;
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<EventStatus | undefined>(initialStatus);
+  const [selectedStatus, setSelectedStatus] = useState<EventStatus | undefined>(statusParam);
+
+  useEffect(() => {
+    setSelectedStatus(statusParam);
+  }, [statusParam]);
 
   const { data, isLoading, isError } = useEvents({
     search: searchTerm || undefined,

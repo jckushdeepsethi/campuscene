@@ -63,7 +63,7 @@ export const listEventsQuerySchema = z.object({
 
 export const eventApprovalSchema = z.object({
   status: z.enum([EventStatus.PUBLISHED, EventStatus.REJECTED], {
-    errorMap: () => ({ message: "Approval status must be either PUBLISHED or REJECTED." })
+    message: "Approval status must be either PUBLISHED or REJECTED."
   }),
   reason: z.string().trim().max(500).optional()
 });

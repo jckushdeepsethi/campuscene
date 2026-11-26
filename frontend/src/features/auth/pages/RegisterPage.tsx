@@ -135,12 +135,39 @@ export const RegisterPage = () => {
       </form>
 
       {registerMutation.isSuccess && (
-        <p className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          Account created successfully.
-          {selectedRole === "SOCIETY" || selectedRole === "PLACEMENT_CELL"
-            ? " Your society account has been submitted to the University Admin for verification."
-            : " You can now sign in to your student dashboard."}
-        </p>
+        <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/70 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-indigo-950 font-bold text-sm">
+            <UserCheck className="text-emerald-600" size={18} />
+            Account Registered! Verify Email OTP
+          </div>
+          <p className="text-xs text-slate-600">
+            A 6-digit verification code was sent to <strong>{watch("email")}</strong>. Your account will be activated only after you verify this OTP.
+          </p>
+
+          {registerMutation.data?.data?.verificationToken && (
+            <div className="rounded-lg border border-indigo-300 bg-white p-2.5 text-center">
+              <span className="block text-[10px] text-slate-500 font-medium">Development OTP Code:</span>
+              <span className="text-lg font-mono font-bold tracking-[6px] text-indigo-700">
+                {registerMutation.data.data.verificationToken}
+              </span>
+            </div>
+          )}
+
+          <Link
+            to={`/verify-email?token=${registerMutation.data?.data?.verificationToken || ""}&email=${encodeURIComponent(watch("email"))}`}
+            className="block w-full text-center"
+          >
+            <Button type="button" className="w-full text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
+              Enter 6-Digit OTP & Activate Account →
+            </Button>
+          </Link>
+
+          {(selectedRole === "SOCIETY" || selectedRole === "PLACEMENT_CELL") && (
+            <p className="text-[11px] text-amber-700 bg-amber-50 rounded-md p-2 border border-amber-200">
+              Note: Society & Placement accounts also undergo University Admin review before official publishing is enabled.
+            </p>
+          )}
+        </div>
       )}
 
       <p className="mt-5 text-center text-sm text-slate-600">

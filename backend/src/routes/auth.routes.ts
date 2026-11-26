@@ -7,6 +7,7 @@ import {
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
+  resendVerificationSchema,
   resetPasswordSchema,
   tokenSchema
 } from "../validators/auth.validator.js";
@@ -21,6 +22,7 @@ router.post("/login", validateBody(loginSchema), asyncHandler(authController.log
 router.post("/refresh-token", asyncHandler(authController.refreshToken));
 router.post("/logout", asyncHandler(authController.logout));
 router.post("/verify-email", validateBody(tokenSchema), asyncHandler(authController.verifyEmail));
+router.post("/resend-verification", validateBody(resendVerificationSchema), asyncHandler(authController.resendVerification));
 router.post("/forgot-password", validateBody(forgotPasswordSchema), asyncHandler(authController.forgotPassword));
 router.post("/reset-password", validateBody(resetPasswordSchema), asyncHandler(authController.resetPassword));
 router.get("/me", authenticate, asyncHandler(authController.me));

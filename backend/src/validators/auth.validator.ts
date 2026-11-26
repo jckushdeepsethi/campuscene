@@ -29,15 +29,19 @@ export const loginSchema = z.object({
 });
 
 export const tokenSchema = z.object({
-  token: z.string().min(32)
+  token: z.string().trim().min(6, "Token or OTP must be at least 6 characters.")
 });
 
 export const forgotPasswordSchema = z.object({
   email: z.string().trim().email().toLowerCase()
 });
 
+export const resendVerificationSchema = z.object({
+  email: z.string().trim().email().toLowerCase()
+});
+
 export const resetPasswordSchema = z.object({
-  token: z.string().min(32),
+  token: z.string().trim().min(6, "Token or OTP must be at least 6 characters."),
   password: passwordSchema
 });
 

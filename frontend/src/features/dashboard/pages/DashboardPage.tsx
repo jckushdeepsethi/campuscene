@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
+  ArrowUpRight,
   BarChart3,
   Building2,
   CalendarDays,
@@ -72,15 +73,22 @@ export const DashboardPage = () => {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2">
-              <div className="flex size-8 items-center justify-center rounded-md bg-slate-900 text-white font-bold text-xs">
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition px-3.5 py-2 cursor-pointer shadow-xs group"
+              title="Click to view & edit Profile and Interests"
+            >
+              <div className="flex size-8 items-center justify-center rounded-md bg-slate-900 text-white font-bold text-xs group-hover:bg-primary transition">
                 {user.name.slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-950">{user.name}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-slate-950 group-hover:text-primary transition">{user.name}</p>
+                  <span className="text-[10px] text-slate-400 group-hover:text-slate-600 font-medium">(Profile)</span>
+                </div>
                 <p className="text-[11px] text-slate-500">{user.email}</p>
               </div>
-            </div>
+            </Link>
 
             <Button
               className="gap-2 text-xs"
@@ -139,32 +147,44 @@ const StudentDashboardView = ({ user }: { user: AuthUser }) => {
 
       {/* Student Key Metrics */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <a
+          href="#my-tickets"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-sky-50/40 hover:border-sky-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to jump to your registered tickets"
+        >
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase">My Active Tickets</span>
-            <Ticket className="text-sky-600" size={20} />
+            <span className="text-xs font-bold uppercase group-hover:text-sky-800 transition">My Active Tickets</span>
+            <Ticket className="text-sky-600 group-hover:scale-110 transition" size={20} />
           </div>
-          <p className="mt-3 text-3xl font-extrabold text-slate-950">{myRegisteredEvents.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Registered campus events</p>
-        </div>
+          <p className="mt-3 text-3xl font-extrabold text-slate-950 group-hover:text-sky-900 transition">{myRegisteredEvents.length}</p>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-sky-700 transition">Registered campus events ↓</p>
+        </a>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <Link
+          to="/events?status=PUBLISHED"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-emerald-50/40 hover:border-emerald-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all live published events"
+        >
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase">Live Campus Events</span>
-            <CalendarDays className="text-emerald-600" size={20} />
+            <span className="text-xs font-bold uppercase group-hover:text-emerald-800 transition">Live Campus Events</span>
+            <CalendarDays className="text-emerald-600 group-hover:scale-110 transition" size={20} />
           </div>
-          <p className="mt-3 text-3xl font-extrabold text-slate-950">{publishedEvents.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Published & open for registration</p>
-        </div>
+          <p className="mt-3 text-3xl font-extrabold text-slate-950 group-hover:text-emerald-700 transition">{publishedEvents.length}</p>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-emerald-600 transition">Published & open for registration →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <Link
+          to="/profile"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view & edit Profile and Interests"
+        >
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase">Student Account Status</span>
-            <CheckCircle2 className="text-emerald-500" size={20} />
+            <span className="text-xs font-bold uppercase group-hover:text-slate-900 transition">Student Profile & Status</span>
+            <CheckCircle2 className="text-emerald-500 group-hover:scale-110 transition" size={20} />
           </div>
           <p className="mt-3 text-2xl font-bold text-emerald-700">Verified</p>
-          <p className="mt-1 text-xs text-slate-500">{user.email}</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-700 transition">{user.email} (View Profile →)</p>
+        </Link>
       </div>
 
       {/* My Tickets Section */}
@@ -291,29 +311,57 @@ const SocietyDashboardView = ({ user }: { user: AuthUser }) => {
 
       {/* Metrics Row */}
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">My Society Events</p>
+        <Link
+          to="/events"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all events created by your society"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-slate-900 transition">My Society Events</p>
+            <ArrowUpRight size={16} className="text-slate-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-slate-950">{mySocietyEvents.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Total events drafted/published</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-700 transition">Total events drafted/published →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Pending Review</p>
+        <Link
+          to="/events?status=PENDING_APPROVAL"
+          className="rounded-lg border border-amber-200 bg-amber-50/50 hover:bg-amber-100/70 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view events awaiting admin review"
+        >
+          <div className="flex items-center justify-between text-amber-800">
+            <p className="text-xs font-bold uppercase group-hover:text-amber-950 transition">Pending Review</p>
+            <ArrowUpRight size={16} className="text-amber-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-amber-600">{pendingApprovals.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Awaiting admin approval</p>
-        </div>
+          <p className="mt-1 text-xs text-amber-600 group-hover:text-amber-800 transition">Awaiting admin approval →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Published Live</p>
+        <Link
+          to="/events?status=PUBLISHED"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-emerald-50/40 hover:border-emerald-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view live published events"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-emerald-800 transition">Published Live</p>
+            <ArrowUpRight size={16} className="text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-emerald-600">{publishedEvents.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Live on campus feed</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-emerald-700 transition">Live on campus feed →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Organizer Role</p>
+        <Link
+          to="/profile"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-purple-50/40 hover:border-purple-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to manage Society Profile & Settings"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-purple-800 transition">Organizer Role</p>
+            <ArrowUpRight size={16} className="text-purple-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-xl font-bold text-purple-700">Society Lead</p>
-          <p className="mt-1 text-xs text-slate-500">{user.email}</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-800 transition">{user.email} →</p>
+        </Link>
       </div>
 
       {/* Managed Events Workspace */}
@@ -411,23 +459,44 @@ const PlacementDashboardView = ({ user }: { user: AuthUser }) => {
 
       {/* Metrics Row */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Placement Drives</p>
+        <Link
+          to="/events"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all corporate drives posted"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-indigo-950 transition">Placement Drives</p>
+            <ArrowUpRight size={16} className="text-slate-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-indigo-950">{myDrives.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Corporate drives posted</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-700 transition">Corporate drives posted →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Live Campus Feed</p>
+        <Link
+          to="/events?status=PUBLISHED"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-emerald-50/40 hover:border-emerald-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all live published talks & drives"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-emerald-800 transition">Live Campus Feed</p>
+            <ArrowUpRight size={16} className="text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-emerald-600">{allEvents.filter((e) => e.status === "PUBLISHED").length}</p>
-          <p className="mt-1 text-xs text-slate-500">Total published talks & drives</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-emerald-700 transition">Total published talks & drives →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Role Permissions</p>
+        <Link
+          to="/profile"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view Placement Cell Profile & Settings"
+        >
+          <div className="flex items-center justify-between text-slate-500">
+            <p className="text-xs font-bold uppercase group-hover:text-indigo-800 transition">Role Permissions</p>
+            <ArrowUpRight size={16} className="text-indigo-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-xl font-bold text-indigo-800">Placement Desk</p>
-          <p className="mt-1 text-xs text-slate-500">Auto-publish enabled</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-700 transition">Auto-publish enabled →</p>
+        </Link>
       </div>
 
       {/* Managed Placement Drives Workspace */}
@@ -558,29 +627,65 @@ const AdminDashboardView = ({ user }: { user: AuthUser }) => {
 
       {/* Metrics Row */}
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-amber-800">Pending Approval Queue</p>
+        <Link
+          to="/events?status=PENDING_APPROVAL"
+          className="rounded-lg border border-amber-200 bg-amber-50/50 hover:bg-amber-100/70 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all events pending admin approval"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase text-amber-800 group-hover:text-amber-950 transition">
+              Pending Approval Queue
+            </p>
+            <ArrowUpRight size={16} className="text-amber-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-amber-700">{pendingEvents.length}</p>
-          <p className="mt-1 text-xs text-amber-600">Requires admin action</p>
-        </div>
+          <p className="mt-1 text-xs text-amber-600 group-hover:text-amber-800 transition">Requires admin action →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Total Campus Events</p>
+        <Link
+          to="/events"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all campus events across all departments"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase text-slate-500 group-hover:text-slate-900 transition">
+              Total Campus Events
+            </p>
+            <ArrowUpRight size={16} className="text-slate-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-slate-950">{allEvents.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Across all departments</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-700 transition">Across all departments →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Live Published</p>
+        <Link
+          to="/events?status=PUBLISHED"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-emerald-50/40 hover:border-emerald-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to view all live published events visible to students"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase text-slate-500 group-hover:text-emerald-800 transition">
+              Live Published
+            </p>
+            <ArrowUpRight size={16} className="text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-3xl font-extrabold text-emerald-600">{publishedCount}</p>
-          <p className="mt-1 text-xs text-slate-500">Visible to students</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-emerald-700 transition">Visible to students →</p>
+        </Link>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase text-slate-500">Admin Authority</p>
+        <Link
+          to="/profile"
+          className="rounded-lg border border-slate-200 bg-white hover:bg-amber-50/40 hover:border-amber-200 p-5 shadow-sm transition hover:shadow-md cursor-pointer group block"
+          title="Click to manage Administrator profile & settings"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase text-slate-500 group-hover:text-amber-800 transition">
+              Admin Authority
+            </p>
+            <ArrowUpRight size={16} className="text-amber-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
+          </div>
           <p className="mt-3 text-xl font-bold text-amber-700">Full Access</p>
-          <p className="mt-1 text-xs text-slate-500">{user.email}</p>
-        </div>
+          <p className="mt-1 text-xs text-slate-500 group-hover:text-slate-800 transition">{user.email} →</p>
+        </Link>
       </div>
 
       {/* Pending Society Account Verification Queue */}

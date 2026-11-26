@@ -8,7 +8,7 @@ import { TokenRepository } from "../repositories/token.repository.js";
 import { UserRepository } from "../repositories/user.repository.js";
 import { EmailService } from "./email.service.js";
 import type { ForgotPasswordInput, LoginInput, RegisterInput, ResetPasswordInput } from "../validators/auth.validator.js";
-import { addDays, addMinutes, createOpaqueToken, hashToken } from "../utils/crypto.js";
+import { addDays, addMinutes, createNumericOtp, createOpaqueToken, hashToken } from "../utils/crypto.js";
 import { signAccessToken } from "../utils/jwt.js";
 
 type AuthServiceDependencies = {
@@ -32,6 +32,17 @@ export class AuthService {
     const existingUser = await this.userRepository.findByEmail(input.email);
 
     if (existingUser) {
+      if (existingUser.status === UserStatus.PENDING_VERIFICATION) {
+        const passwordHash = await bcrypt.hash(input.password, env.BCRYPT_SALT_ROUNDS);
+        await this.userRepository.updatePassword(existingUser.id, passwordHash);
+        const verificationToken = createNumericOtp(6);
+        await this.tokenRepository.createEmailVerificationToken(existingUser.id, hashToken(verificationToken), addMinutes(new Date(), 60));
+        await this.emailService.sendVerificationEmail(existingUser.email, existingUser.name, verificationToken);
+        return {
+          user: toPublicUserDto(existingUser),
+          verificationToken
+        };
+      }
       throw new AppError(409, ErrorCodes.CONFLICT, "An account with this email already exists.");
     }
 
@@ -69,7 +80,7 @@ export class AuthService {
       collegeName: input.collegeName
     });
 
-    const verificationToken = createOpaqueToken();
+    const verificationToken = createNumericOtp(6);
     await this.tokenRepository.createEmailVerificationToken(user.id, hashToken(verificationToken), addMinutes(new Date(), 60));
     await this.emailService.sendVerificationEmail(user.email, user.name, verificationToken);
 
@@ -127,16 +138,34 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const storedToken = await this.tokenRepository.findEmailVerificationToken(hashToken(token));
+    const cleanToken = token.trim();
+    const storedToken = await this.tokenRepository.findEmailVerificationToken(hashToken(cleanToken));
 
     if (!storedToken || storedToken.usedAt || storedToken.expiresAt < new Date()) {
-      throw new AppError(400, ErrorCodes.BAD_REQUEST, "Invalid or expired verification token.");
+      throw new AppError(400, ErrorCodes.BAD_REQUEST, "Invalid or expired verification OTP code.");
     }
 
     await this.tokenRepository.useEmailVerificationToken(storedToken.id);
     const user = await this.userRepository.markEmailVerified(storedToken.userId);
 
     return toPublicUserDto(user);
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.userRepository.findByEmail(email.toLowerCase().trim());
+    if (!user) {
+      return { sent: true };
+    }
+    if (user.status === UserStatus.ACTIVE && user.emailVerifiedAt) {
+      throw new AppError(400, ErrorCodes.BAD_REQUEST, "This account is already verified. You can sign in directly.");
+    }
+    const verificationToken = createNumericOtp(6);
+    await this.tokenRepository.createEmailVerificationToken(user.id, hashToken(verificationToken), addMinutes(new Date(), 60));
+    await this.emailService.sendVerificationEmail(user.email, user.name, verificationToken);
+    return {
+      sent: true,
+      verificationToken: env.NODE_ENV === "development" ? verificationToken : undefined
+    };
   }
 
   async forgotPassword(input: ForgotPasswordInput) {
@@ -146,7 +175,7 @@ export class AuthService {
       return { resetToken: null };
     }
 
-    const resetToken = createOpaqueToken();
+    const resetToken = createNumericOtp(6);
     await this.tokenRepository.createPasswordResetToken(user.id, hashToken(resetToken), addMinutes(new Date(), 30));
     await this.emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
 

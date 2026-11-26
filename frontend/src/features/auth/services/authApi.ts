@@ -65,6 +65,15 @@ export const authApi = {
     return response.data;
   },
 
+  async resendVerification(email: string) {
+    const response = await api.post<{
+      success: boolean;
+      message: string;
+      data?: { sent: boolean; verificationToken?: string };
+    }>("/auth/resend-verification", { email });
+    return response.data;
+  },
+
   async forgotPassword(input: ForgotPasswordFormValues) {
     const response = await api.post<ForgotPasswordResponse>("/auth/forgot-password", input);
     return response.data;

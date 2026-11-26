@@ -201,5 +201,37 @@ export const eventsApi = {
   async generateAiDetails(title: string, category?: string) {
     const response = await api.post<{ data: AiGenerateOutput }>("/events/ai-generate", { title, category });
     return response.data.data;
+  },
+
+  async suggestFormFields(eventTitle: string, category?: string, existingQuestions?: string[]) {
+    const response = await api.post<{
+      data: Array<{ label: string; fieldType: string; required: boolean; options?: string[] }>;
+    }>("/ai/suggest-form-fields", { eventTitle, category, existingQuestions });
+    return response.data.data;
+  },
+
+  async detectDuplicateEvent(newTitle: string) {
+    const response = await api.post<{
+      data: {
+        isDuplicate: boolean;
+        similarEventTitle: string | null;
+        similarityScorePercent: number;
+        warningMessage: string | null;
+      };
+    }>("/ai/detect-duplicate", { newTitle });
+    return response.data.data;
+  },
+
+  async moderateContent(title: string, description: string) {
+    const response = await api.post<{
+      data: {
+        isSafe: boolean;
+        hasAbusiveLanguage: boolean;
+        isSpam: boolean;
+        isTooShort: boolean;
+        feedbackMessage: string;
+      };
+    }>("/ai/moderate-content", { title, description });
+    return response.data.data;
   }
 };

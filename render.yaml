@@ -29,5 +29,7 @@ services:
         value: 12
       - key: ADMIN_SECRET_KEY
         generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
       - key: EMAIL_FROM
         value: CampuScene <noreply@campuscene.edu>

@@ -90,9 +90,29 @@ Return ONLY valid JSON:
   "actionableImprovements": ["Suggestion 1", "Suggestion 2"]
 }`,
 
-  smartFormBuilder: (eventTitle: string, category?: string) => `Suggest custom registration form fields for:
+  smartFormBuilder: (eventTitle: string, category?: string, existingQuestions?: string[]) => `Suggest custom attendee registration form fields for:
 Title: "${eventTitle}"
 Category: "${category ?? "General"}"
+
+Domain Guidelines:
+- If this is a TOURNAMENT or SPORTS COMPETITION (e.g., Cricket, Football, Basketball, Esports, Gaming, Chess, Athletics):
+  Prioritize essential team registration fields:
+  1. "Team Name" (Required, TEXT)
+  2. "Captain Name" (Required, TEXT)
+  3. "Captain Contact / WhatsApp Number" (Required, NUMBER)
+  4. "Team Members Names & Roll Numbers (Full Squad List)" (Required, TEXT)
+  5. "Player Role / Position" (Required, SELECT, e.g. for Cricket: ["Batsman", "Bowler", "All-Rounder", "Wicket-Keeper"])
+  6. "Vice-Captain Name" (Optional, TEXT)
+  7. "Jersey Size" (Optional, SELECT, options: ["S", "M", "L", "XL", "XXL"])
+- If this is a HACKATHON or TECH COMPETITION:
+  Include: "Team Name" (Required), "Team Lead Name" (Required), "GitHub Profile URL" (Required), "Team Members & Tech Stacks" (Required).
+- If this is a WORKSHOP, SEMINAR, or CULTURAL EVENT:
+  Include: "Attendee Full Name", "Emergency Contact Phone", "Dietary / Food Preference", "College ID Proof".
+${
+  existingQuestions && existingQuestions.length > 0
+    ? `\nExisting questions already included in this event form:\n${existingQuestions.map((q) => `- "${q}"`).join("\n")}\n\nIMPORTANT: Do NOT repeat or duplicate the existing questions above. Analyze what is currently covered and suggest 3-4 NEW, complementary, high-value questions that are missing for this event.`
+    : ""
+}
 
 Return ONLY valid JSON array of field objects:
 [

@@ -27,7 +27,7 @@ export const loginSchema = z.object({
 });
 
 export const tokenSchema = z.object({
-  token: z.string().trim().min(32, "Enter a valid token.")
+  token: z.string().trim().min(6, "Enter the 6-digit OTP code or verification token.")
 });
 
 export const forgotPasswordSchema = z.object({
@@ -35,7 +35,7 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  token: z.string().trim().min(32, "Enter a valid reset token."),
+  token: z.string().trim().min(6, "Enter the 6-digit OTP code or reset token."),
   password: passwordSchema
 });
 
