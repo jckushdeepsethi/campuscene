@@ -19,11 +19,17 @@ const setRefreshCookie = (res: Parameters<RequestHandler>[1], token: string) => 
 export class AuthController {
   register: RequestHandler = async (req, res) => {
     const result = await authService.register(req.body);
+    const hasSmtp = Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 
     res.status(201).json({
       success: true,
-      message: "Account created. Verify your email to activate the account.",
-      data: result
+      message: hasSmtp
+        ? "Account created. Verify your email with the OTP code sent to your inbox."
+        : "Account created. (SMTP is not configured on this server, code provided below).",
+      data: {
+        ...result,
+        smtpConfigured: hasSmtp
+      }
     });
   };
 
@@ -76,21 +82,27 @@ export class AuthController {
 
   resendVerification: RequestHandler = async (req, res) => {
     const result = await authService.resendVerification(req.body.email);
+    const hasSmtp = Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 
     res.status(200).json({
       success: true,
-      message: "If an unverified account exists, a new verification code has been sent.",
-      data: env.NODE_ENV === "development" ? result : undefined
+      message: hasSmtp
+        ? "If an unverified account exists, a verification code has been dispatched to your email."
+        : "Verification code generated. (SMTP is not configured on this server, code provided below).",
+      data: !hasSmtp || env.NODE_ENV === "development" ? { ...result, smtpConfigured: hasSmtp } : undefined
     });
   };
 
   forgotPassword: RequestHandler = async (req, res) => {
     const result = await authService.forgotPassword(req.body);
+    const hasSmtp = Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 
     res.status(200).json({
       success: true,
-      message: "If an account exists, a reset email has been sent.",
-      data: env.NODE_ENV === "development" ? result : undefined
+      message: hasSmtp
+        ? "If an account exists, a reset code has been sent to your email."
+        : "Reset code generated. (SMTP is not configured on this server, code provided below).",
+      data: !hasSmtp || env.NODE_ENV === "development" ? { ...result, smtpConfigured: hasSmtp } : undefined
     });
   };
 

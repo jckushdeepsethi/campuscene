@@ -80,9 +80,9 @@ export const VerifyEmailPage = () => {
           <span className="mb-1 block text-sm font-medium text-slate-700">6-Digit Verification OTP</span>
           <Input
             autoComplete="one-time-code"
-            placeholder="e.g. 582914"
+            placeholder="— — — — — —"
             maxLength={6}
-            className="text-center font-mono text-xl tracking-[6px] font-bold h-12 uppercase text-indigo-700 bg-slate-50 focus:bg-white"
+            className="text-center font-mono text-xl tracking-[8px] font-bold h-12 uppercase text-indigo-700 bg-slate-50 focus:bg-white placeholder:text-slate-300 placeholder:tracking-normal placeholder:font-normal placeholder:text-sm"
             {...register("token")}
           />
           {errors.token && <span className="mt-1 block text-sm text-destructive">{errors.token.message}</span>}

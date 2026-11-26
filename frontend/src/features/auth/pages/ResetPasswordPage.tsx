@@ -28,15 +28,23 @@ export const ResetPasswordPage = () => {
     <AuthCard title="Reset password with OTP" subtitle="Enter your 6-digit reset code and create a new secure password.">
       <form className="space-y-4" onSubmit={handleSubmit((values) => resetPasswordMutation.mutate(values))}>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">6-Digit Reset OTP</span>
+          <span className="mb-1 block text-sm font-medium text-slate-700">6-Digit Reset OTP Code</span>
           <Input
             autoComplete="one-time-code"
-            placeholder="e.g. 582914"
+            placeholder="— — — — — —"
             maxLength={6}
-            className="text-center font-mono text-xl tracking-[6px] font-bold h-12 uppercase text-indigo-700 bg-slate-50 focus:bg-white"
+            className="text-center font-mono text-xl tracking-[8px] font-bold h-12 uppercase text-indigo-700 bg-slate-50 focus:bg-white placeholder:text-slate-300 placeholder:tracking-normal placeholder:font-normal placeholder:text-sm"
             {...register("token")}
           />
           {errors.token && <span className="mt-1 block text-sm text-destructive">{errors.token.message}</span>}
+          {!searchParams.get("token") && (
+            <p className="mt-1 text-[11px] text-slate-500">
+              Haven't received a code yet?{" "}
+              <Link to="/forgot-password" className="text-primary font-semibold underline">
+                Send OTP to your email
+              </Link>
+            </p>
+          )}
         </label>
 
         <label className="block">

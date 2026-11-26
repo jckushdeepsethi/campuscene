@@ -164,7 +164,7 @@ export class AuthService {
     await this.emailService.sendVerificationEmail(user.email, user.name, verificationToken);
     return {
       sent: true,
-      verificationToken: env.NODE_ENV === "development" ? verificationToken : undefined
+      verificationToken
     };
   }
 
